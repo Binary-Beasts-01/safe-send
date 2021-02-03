@@ -10,20 +10,20 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.example.safesend.R
 
-class HomeFragment : Fragment() {
+class MessagesFragment : Fragment() {
 
-    private lateinit var homeViewModel: HomeViewModel
+    private lateinit var messagesViewModel: MessagesViewModel
 
     override fun onCreateView(
             inflater: LayoutInflater,
             container: ViewGroup?,
             savedInstanceState: Bundle?
     ): View? {
-        homeViewModel =
-                ViewModelProvider(this).get(HomeViewModel::class.java)
+        messagesViewModel =
+                ViewModelProvider(this).get(MessagesViewModel::class.java)
         val root = inflater.inflate(R.layout.fragment_home, container, false)
         val textView: TextView = root.findViewById(R.id.text_home)
-        homeViewModel.text.observe(viewLifecycleOwner, Observer {
+        messagesViewModel.text.observe(viewLifecycleOwner, Observer {
             textView.text = it
         })
         return root
