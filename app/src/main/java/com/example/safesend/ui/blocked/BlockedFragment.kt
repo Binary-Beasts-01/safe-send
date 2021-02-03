@@ -1,9 +1,7 @@
 package com.example.safesend.ui.blocked
 
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
@@ -21,11 +19,14 @@ class BlockedFragment : Fragment() {
     ): View? {
         blockedViewModel =
                 ViewModelProvider(this).get(BlockedViewModel::class.java)
-        val root = inflater.inflate(R.layout.fragment_gallery, container, false)
+        val root = inflater.inflate(R.layout.fragment_blocked, container, false)
         val textView: TextView = root.findViewById(R.id.text_gallery)
         blockedViewModel.text.observe(viewLifecycleOwner, Observer {
             textView.text = it
         })
+        setHasOptionsMenu(true)
         return root
     }
+
+
 }
