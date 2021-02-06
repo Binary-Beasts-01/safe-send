@@ -5,10 +5,6 @@
 
     <group android:checkableBehavior="single">
         <item
-            android:id="@+id/nav_home"
-            android:icon="@android:drawable/stat_notify_chat"
-            android:title="Messages" />
-        <item
             android:id="@+id/nav_blocked"
             android:icon="@drawable/ic_speaker_notes_blocked"
             android:title="Blocked" />
