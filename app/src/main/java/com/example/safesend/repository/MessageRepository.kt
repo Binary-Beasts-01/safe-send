@@ -1,28 +1,29 @@
 package com.example.safesend.repository
 
+import androidx.lifecycle.MutableLiveData
 import com.example.safesend.models.MessageModel
 
-class MessageRepository {
-    private var messageRepository: MessageRepository? = null;
-    private var messageList: ArrayList<MessageModel>? = null;
+object MessageRepository{
+    var messageList = mutableListOf(getModel("Melkamu","Hey yet hedeh new?"))
 
-    fun getModelInstance(): MessageRepository {
-        if(messageRepository != null){
-            return messageRepository as MessageRepository
-        }
-        messageRepository = MessageRepository()
-        return messageRepository as MessageRepository
+    fun getMessages(): MutableList<MessageModel> {
+
+        val data = MutableLiveData<MutableList<MessageModel>>()
+        populateMessage()
+        data.postValue(messageList)
+        return  messageList
     }
-
-    fun populateMessage(): ArrayList<MessageModel>?{
-        var m: MessageModel
+    fun getModel(sender: String, content: String): MessageModel{
+        val model = MessageModel(sender, content)
+        return model
+    }
+    fun populateMessage(){
         for(i in 1..4){
-            m = MessageModel()
-            m.sender = "Melkamu"
-            m.msgContent = "Hey yet hedeh new?"
-            messageList?.add(m)
+            val model = getModel("Melkamu","Hey yet hedeh new?")
+            messageList.add(model)
         }
-        return messageList
     }
-
 }
+
+
+
