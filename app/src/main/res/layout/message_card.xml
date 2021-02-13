@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-    <com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
         android:id="@+id/message_card"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="8dp"
-        app:cardCornerRadius="20dp"
+        android:layout_margin="4dp"
+        app:cardCornerRadius="10dp"
         >
 
         <LinearLayout
@@ -14,16 +14,13 @@
             android:orientation="horizontal">
             <!-- Media -->
             <ImageView
-                android:id="@+id/card_img"
+                android:id="@+id/img_logo"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                app:srcCompat="@drawable/profile"
-                android:padding="16dp"
-                android:paddingEnd="8dp"
-                android:scaleType="fitCenter"
-                android:contentDescription="this is saks"
-                />
+                android:padding="@dimen/padding_standard"
+                android:paddingEnd="@dimen/padding_sm_standard"
+                android:src="@drawable/profile" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -37,6 +34,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Meskerem Abdi"
+                        android:textSize="@dimen/txt_margin_m_standard"
                         android:textAppearance="?attr/textAppearanceHeadline6"
                         />
 
@@ -46,10 +44,11 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="8dp"
                         android:maxLines="2"
+                        android:textSize="@dimen/txt_margin_standard"
                         android:text="@string/long_text"
                         android:textAppearance="?attr/textAppearanceBody2"
                         android:textColor="?android:attr/textColorSecondary" />
 
                 </LinearLayout>
             </LinearLayout>
-    </com.google.android.material.card.MaterialCardView>
+    </androidx.cardview.widget.CardView>

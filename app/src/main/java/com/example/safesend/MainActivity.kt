@@ -30,11 +30,12 @@ class MainActivity : AppCompatActivity() {
 //        toolbar.setTitleTextColor( resources.getColor(R.color.background))
         setSupportActionBar(toolbar)
 
-        val fab: FloatingActionButton = findViewById(R.id.fab)
-        fab.setOnClickListener { view ->
-            Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                    .setAction("Action", null).show()
-        }
+//        val fab: FloatingActionButton = findViewById(R.id.fab)
+//        fab.setOnClickListener { view ->
+////            val i = Intent(this, MessageAreaActivity::class.java)
+////            Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+////                    .setAction("Action", null).show()
+//        }
 
         val mode = this.resources?.configuration?.uiMode?.and(Configuration.UI_MODE_NIGHT_MASK)
         when (mode) {
