@@ -1,69 +1,48 @@
 package com.example.safesend
 
 import android.Manifest
-import android.app.*
-import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.content.pm.PackageManager
-import android.content.res.Configuration
-import android.graphics.Color
-import android.graphics.drawable.ColorDrawable
-import android.media.MediaParser
-import android.os.Build
 import android.os.Bundle
+import android.provider.Telephony
 import android.view.Menu
-import com.google.android.material.floatingactionbutton.FloatingActionButton
-import com.google.android.material.snackbar.Snackbar
-import com.google.android.material.navigation.NavigationView
+import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.Toolbar
+import androidx.core.app.ActivityCompat
+import androidx.drawerlayout.widget.DrawerLayout
+import androidx.navigation.NavController
+import androidx.navigation.NavDestination
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
-import androidx.drawerlayout.widget.DrawerLayout
-import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.widget.Toolbar
-import androidx.core.app.ActivityCompat
-import androidx.core.app.NotificationCompat
-import androidx.core.app.NotificationManagerCompat
-import androidx.navigation.NavController
-import androidx.navigation.NavDestination
+import com.google.android.material.navigation.NavigationView
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var appBarConfiguration: AppBarConfiguration
-
+    val REQUEST_CODE_ASK_PERMISSION = 123
+    val REQUEST_CODE_ASK_DEFAULT = 3343
+    var ReadPermission: Boolean = false
+    var DefaultPermission: Boolean = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.RECEIVE_SMS) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this,
-                    arrayOf(Manifest.permission.RECEIVE_SMS, Manifest.permission.SEND_SMS), 111)
-
-        } else {
-            receiveMessage()
-        }
+        requestPermission()
         ////////////////////////////////  Notification -- start --
         //////////////////////////      Notification -- end --
 
         val toolbar: Toolbar = findViewById(R.id.toolbar)
         setSupportActionBar(toolbar)
 
-//        val fab: FloatingActionButton = findViewById(R.id.fab)
-//        fab.setOnClickListener { view ->
-////            val i = Intent(this, MessageAreaActivity::class.java)
-////            Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-////                    .setAction("Action", null).show()
-//        }
-
         val drawerLayout: DrawerLayout = findViewById(R.id.drawer_layout)
         val navView: NavigationView = findViewById(R.id.nav_view)
         val navController = findNavController(R.id.nav_host_fragment)
-        // Passing each menu ID as a set of Ids because each
-        // menu should be considered as top level destinations.
+
         appBarConfiguration = AppBarConfiguration(navController.graph, drawerLayout)
         setupActionBarWithNavController(navController, appBarConfiguration)
         navController.addOnDestinationChangedListener { nc: NavController, nd: NavDestination, args: Bundle? ->
@@ -74,8 +53,31 @@ class MainActivity : AppCompatActivity() {
             }
         }
         navView.setupWithNavController(navController)
+
+
     }
 
+    override fun onResume() {
+        super.onResume()
+        if(!(ReadPermission && DefaultPermission)){
+            Toast.makeText(this@MainActivity, "Permission not granted!", Toast.LENGTH_LONG).show()
+        }
+
+    }
+
+    private fun requestPermission(){
+        if (Telephony.Sms.getDefaultSmsPackage(applicationContext) != applicationContext.packageName){
+            val setSmsAppIntent = Intent(Telephony.Sms.Intents.ACTION_CHANGE_DEFAULT)
+            setSmsAppIntent.putExtra(Telephony.Sms.Intents.EXTRA_PACKAGE_NAME,
+                    packageName)
+            startActivityForResult(setSmsAppIntent, REQUEST_CODE_ASK_DEFAULT)
+        }
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.RECEIVE_SMS) != PackageManager.PERMISSION_GRANTED
+                && ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_SMS) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.RECEIVE_SMS, Manifest.permission.SEND_SMS), REQUEST_CODE_ASK_PERMISSION)
+        }
+
+    }
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         // Inflate the menu; this adds items to the action bar if it is present.
         menuInflater.inflate(R.menu.about_menu, menu)
@@ -92,17 +94,24 @@ class MainActivity : AppCompatActivity() {
 //        inflater.inflate(R.menu.about_menu, menu)
 //
 //    }
+     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == REQUEST_CODE_ASK_DEFAULT && resultCode == RESULT_OK) {
+            DefaultPermission = true
+            Toast.makeText(this@MainActivity, "Yes, now app is default sms app!", Toast.LENGTH_LONG).show()
+        } else {
+            Toast.makeText(this@MainActivity, "Set the app as default sms app!", Toast.LENGTH_LONG).show()
+        }
+    }
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-         if (requestCode == 111 && grantResults[0] == PackageManager.PERMISSION_GRANTED)
-             receiveMessage()
-    }
-
-    private fun receiveMessage() {
-//        registerReceiver(MessageReceivedBroadcastReceiver(), IntentFilter("android.provider.Telephony.SMS_RECEIVED"))
-        IntentFilter("android.provider.Telephony.SMS_RECEIVED").also {
-            registerReceiver(MessageReceivedBroadcastReceiver(), it)
-        }
+         if (requestCode == REQUEST_CODE_ASK_PERMISSION && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+             ReadPermission = true
+             Toast.makeText(this@MainActivity, "yeah! permission granted!", Toast.LENGTH_LONG).show()
+         }
+         else {
+             Toast.makeText(this@MainActivity, "Please accept the permissions!", Toast.LENGTH_LONG).show()
+         }
     }
 
 

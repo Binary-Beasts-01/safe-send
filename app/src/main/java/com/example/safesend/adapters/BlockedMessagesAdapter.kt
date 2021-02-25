@@ -1,6 +1,5 @@
 package com.example.safesend.adapters
 
-import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -8,17 +7,16 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.safesend.R
 import com.example.safesend.Utility.SMS
-import com.example.safesend.models.MessageModel
 
-class MessagesAdapter: RecyclerView.Adapter<MessagesAdapter.MessageViewHolder>() {
+class BlockedMessagesAdapter: RecyclerView.Adapter<BlockedMessagesAdapter.BlockedMessageViewHolder>() {
     var msgs = emptyList<SMS>()
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MessageViewHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BlockedMessageViewHolder {
         val view: View = LayoutInflater.from(parent.context)
                 .inflate(R.layout.message_card, parent, false)
-        return MessageViewHolder(view)
+        return BlockedMessageViewHolder(view)
     }
 
-    override fun onBindViewHolder(holder: MessageViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: BlockedMessageViewHolder, position: Int) {
         val m = msgs.get(position)
         holder.bind(m)
     }
@@ -29,7 +27,7 @@ class MessagesAdapter: RecyclerView.Adapter<MessagesAdapter.MessageViewHolder>()
         this.msgs = messages
         notifyDataSetChanged()
     }
-    class MessageViewHolder(item: View) : RecyclerView.ViewHolder(item) {
+    class BlockedMessageViewHolder(item: View) : RecyclerView.ViewHolder(item) {
         private val sender: TextView = itemView.findViewById(R.id.msg_sender)
         private val msg: TextView = itemView.findViewById(R.id.msg_content)
 

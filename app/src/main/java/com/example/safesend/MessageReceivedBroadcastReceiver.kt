@@ -1,6 +1,7 @@
 package com.example.safesend
 
-import android.app.*
+import android.app.NotificationChannel
+import android.app.NotificationManager
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
@@ -9,21 +10,55 @@ import android.graphics.Color
 import android.os.Build
 import android.provider.Telephony
 import android.telephony.SmsMessage
+import android.util.Log
 import android.widget.Toast
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
-import androidx.core.content.ContextCompat.getSystemService
+import com.example.safesend.Utility.SMS
+import com.example.safesend.db.SmsDatabase
+import com.example.safesend.repository.MessageRepository
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.launch
+import java.sql.Date
+import java.text.SimpleDateFormat
+import java.util.regex.Pattern
 
 class MessageReceivedBroadcastReceiver : BroadcastReceiver() {
 
     val CHANNEL_ID = "channelId"
     val CHANNEL_NAME = "channelName"
 
-    override fun onReceive(context: Context?, intent: Intent?) {
-       for (sms in Telephony.Sms.Intents.getMessagesFromIntent(intent)) {
+    override fun onReceive(context: Context, intent: Intent?) {
+        val scope = CoroutineScope(SupervisorJob())
+        val dao = SmsDatabase.getDatabase(context, scope).smsDao()
+        val repo = MessageRepository(dao)
+        val sms = Telephony.Sms.Intents.getMessagesFromIntent(intent)[0]
            createNotificationChannel(context)
-           showNotification(context, sms)
-       }
+           val dateTimeSms: Long = sms.timestampMillis
+           val dateFormat = SimpleDateFormat("MM/dd/yyyy").format(Date(dateTimeSms))
+           val sender = sms.originatingAddress.toString()
+
+           if (isScam(sender)) {
+//               if scam store it in blocked list and abort msg broadcast
+               val newSms = SMS(0, sender, sms.displayMessageBody)
+               scope.launch {
+                   repo.insert(newSms)
+               }
+               Toast.makeText(context, "Scam SMS blocked", Toast.LENGTH_LONG).show()
+               abortBroadcast()
+           }else {
+//            if not scam then display notification and add msg to
+               showNotification(context, sms)
+           }
+    }
+
+    private fun isScam(num: String): Boolean{
+        val p = Pattern.compile("[0-9]{4}")
+        if(p.matcher(num).matches()){
+            return true
+        }
+        return false
     }
 
     private fun showNotification(context: Context?, sms: SmsMessage) {

@@ -1,29 +1,47 @@
 package com.example.safesend.repository
 
+import android.Manifest
+import android.content.Context
+import android.database.Cursor
+import android.net.Uri
+import android.os.Build
+import androidx.annotation.WorkerThread
+import androidx.core.app.ActivityCompat.requestPermissions
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import com.example.safesend.models.MessageModel
+import androidx.lifecycle.asLiveData
+import com.example.safesend.Utility.SMS
+import com.example.safesend.db.DaoSMS
 
-object MessageRepository{
-    var messageList = mutableListOf(getModel("Melkamu","Hey yet hedeh new?"))
 
-    fun getMessages(): MutableList<MessageModel> {
+class MessageRepository(private val smsDao: DaoSMS) {
+    val messageList: LiveData<List<SMS>> = smsDao.getAllSms().asLiveData()
+    var smsInboxList: MutableLiveData<List<SMS>> = MutableLiveData()
 
-        val data = MutableLiveData<MutableList<MessageModel>>()
-        populateMessage()
-        data.postValue(messageList)
-        return  messageList
+    @Suppress("RedundantSuspendModifier")
+    @WorkerThread
+    suspend fun insert(sms: SMS) {
+        smsDao.insertAll(sms)
     }
-    fun getModel(sender: String, content: String): MessageModel{
-        val model = MessageModel(sender, content)
-        return model
-    }
-    fun populateMessage(){
-        for(i in 1..4){
-            val model = getModel("Melkamu","Hey yet hedeh new?")
-            messageList.add(model)
+    fun readSms(context: Context): List<SMS>{
+        val col_projection = arrayOf("_id", "address", "body")
+        val cursor: Cursor? = context.contentResolver.query(Uri.parse("content://sms/inbox"), col_projection, null, null, "_id DESC")
+        val inboxSms = ArrayList<SMS>()
+        if (cursor?.moveToFirst() == true) { // must check the result to prevent exception
+            do {
+                for (idx in 0 until cursor.columnCount) {
+                    val id: String = cursor.getString(0)
+                    val address: String = cursor.getString(1)
+                    val body: String = cursor.getString(2)
+                    val smsInbox = SMS(0, address, body)
+                    inboxSms.add(smsInbox)
+                }
+                // use msgData
+            } while (cursor.moveToNext())
+            smsInboxList.postValue(inboxSms)
         }
+        cursor?.close()
+        return inboxSms
     }
 }
-
-
 

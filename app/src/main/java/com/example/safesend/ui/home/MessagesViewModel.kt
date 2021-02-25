@@ -1,29 +1,43 @@
 package com.example.safesend.ui.home
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import com.example.safesend.models.MessageModel
+import android.app.Application
+import android.content.Context
+import android.database.Cursor
+import android.net.Uri
+import android.util.Log
+import androidx.lifecycle.*
+import com.example.safesend.Utility.SMS
+import com.example.safesend.db.DaoSMS
+import com.example.safesend.db.SmsDatabase
 import com.example.safesend.repository.MessageRepository
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.launch
 
-class MessagesViewModel : ViewModel() {
-    var messageData = MutableLiveData<MutableList<MessageModel>>();
 
-    init{
-        messageData.value = MessageRepository.getMessages()
-    }
+class MessagesViewModel(private val app: Application) : AndroidViewModel(app) {
 
-    fun getAllMessages(): MutableList<MessageModel> {
-        return messageData.value as MutableList<MessageModel>
+    val allInbox: MutableLiveData<List<SMS>> = MutableLiveData()
+    init {
+        allInbox.postValue(getMs())
     }
-    fun listenForMessage(): LiveData<MutableList<MessageModel>> {
-        return messageData
+    private fun getMs(): ArrayList<SMS>{
+        val col_projection = arrayOf("_id", "address", "body")
+        val cursor: Cursor? = app.applicationContext.contentResolver.query(Uri.parse("content://sms/inbox"), col_projection, null, null, "_id DESC")
+        val inboxSms = ArrayList<SMS>()
+        if (cursor?.moveToFirst() == true) { // must check the result to prevent exception
+            do {
+                    val id: String = cursor.getString(0)
+                    val address: String = cursor.getString(1)
+                    val body: String = cursor.getString(2)
+                    Log.i("Message num: $id", address)
+                    val smsInbox = SMS(0, address, body)
+                    inboxSms.add(smsInbox)
+//                }
+                // use msgData
+            } while (cursor.moveToNext())
+        }
+        cursor?.close()
+        return inboxSms
     }
-    fun addMessage(){
-        val msg = MessageRepository.getModel("Zeleke", "Tesfaye")
-        val msgList = messageData.value
-        msgList?.add(msg)
-        messageData.postValue(msgList!!)
-    }
-
 }
