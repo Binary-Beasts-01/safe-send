@@ -27,9 +27,9 @@ class BlockedFragment : Fragment() {
         blockedViewModel =
                 ViewModelProvider(this).get(BlockedViewModel::class.java)
         blockedRecycleAdapter = BlockedMessagesAdapter()
-        blockedViewModel.allMessages .observe(viewLifecycleOwner, Observer {
+        blockedViewModel.listenForMessage().observe(viewLifecycleOwner, Observer {
             blockedRecycleAdapter.setData(it)
-            Toast.makeText(activity, "Data changed", Toast.LENGTH_SHORT).show()
+            Toast.makeText(activity, "Data changed: size: ${it.size}", Toast.LENGTH_SHORT).show()
         })
 
 

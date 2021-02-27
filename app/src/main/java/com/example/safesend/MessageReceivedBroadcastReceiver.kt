@@ -32,21 +32,22 @@ class MessageReceivedBroadcastReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent?) {
         val scope = CoroutineScope(SupervisorJob())
         val dao = SmsDatabase.getDatabase(context, scope).smsDao()
-        val repo = MessageRepository(dao)
+        val repo = MessageRepository(context)
         val sms = Telephony.Sms.Intents.getMessagesFromIntent(intent)[0]
-           createNotificationChannel(context)
-           val dateTimeSms: Long = sms.timestampMillis
-           val dateFormat = SimpleDateFormat("MM/dd/yyyy").format(Date(dateTimeSms))
-           val sender = sms.originatingAddress.toString()
+        createNotificationChannel(context)
+        val dateTimeSms: Long = sms.timestampMillis
+        val dateFormat = SimpleDateFormat("MM/dd/yyyy").format(Date(dateTimeSms))
+        val sender = sms.originatingAddress.toString()
 
-           if (isScam(sender)) {
+        if (isScam(sender)) {
 //               if scam store it in blocked list and abort msg broadcast
+               Toast.makeText(context, "Scam SMS blocked", Toast.LENGTH_LONG).show()
+               abortBroadcast()
                val newSms = SMS(0, sender, sms.displayMessageBody)
                scope.launch {
                    repo.insert(newSms)
                }
-               Toast.makeText(context, "Scam SMS blocked", Toast.LENGTH_LONG).show()
-               abortBroadcast()
+
            }else {
 //            if not scam then display notification and add msg to
                showNotification(context, sms)
