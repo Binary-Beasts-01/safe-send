@@ -1,6 +1,8 @@
 package com.example.safesend
 
 import android.Manifest
+import android.content.BroadcastReceiver
+import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.content.pm.PackageManager
@@ -28,11 +30,12 @@ class MainActivity : AppCompatActivity() {
     val REQUEST_CODE_ASK_DEFAULT = 3343
     var ReadPermission: Boolean = false
     var DefaultPermission: Boolean = false
-
+    private lateinit var br: MessageReceivedBroadcastReceiver
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         requestPermission()
+        br = MessageReceivedBroadcastReceiver()
         ////////////////////////////////  Notification -- start --
         //////////////////////////      Notification -- end --
 
@@ -53,14 +56,14 @@ class MainActivity : AppCompatActivity() {
             }
         }
         navView.setupWithNavController(navController)
-
-
     }
 
     override fun onResume() {
         super.onResume()
         if(!(ReadPermission && DefaultPermission)){
             Toast.makeText(this@MainActivity, "Permission not granted!", Toast.LENGTH_LONG).show()
+        }else{
+            registerReceiver(br, IntentFilter("android.provider.Telephony.SMS_RECEIVED"))
         }
 
     }
@@ -114,5 +117,8 @@ class MainActivity : AppCompatActivity() {
          }
     }
 
-
+    override fun onDestroy() {
+        super.onDestroy()
+        unregisterReceiver(br)
+    }
 }

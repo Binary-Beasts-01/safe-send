@@ -19,7 +19,6 @@
             android:name=".MessageActivity"
             android:label="@string/title_activity_message"
             android:theme="@style/Theme.SafeSend.NoActionBar">
-
         </activity>
         <activity
             android:name=".MainActivity"
@@ -29,22 +28,14 @@
                 <action android:name="android.intent.action.MAIN" />
                 <action android:name="android.intent.action.SEND" />
                 <action android:name="android.intent.action.SENDTO" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
-
-                <data android:scheme="sms" />
-                <data android:scheme="smsto" />
-                <data android:scheme="mms" />
-                <data android:scheme="mmsto" />
             </intent-filter>
         </activity>
-
         <receiver
             android:name=".MessageReceivedBroadcastReceiver"
             android:enabled="true"
             android:permission="android.permission.BROADCAST_SMS">
             <intent-filter android:priority="9999">
-                <action android:name="android.provider.Telephony.SMS_RECEIVED" />
                 <action android:name="android.provider.Telephony.SMS_DELIVER" />
             </intent-filter>
         </receiver>

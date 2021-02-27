@@ -1,6 +1,7 @@
 package com.example.safesend.ui.blocked
 
 import android.app.Application
+import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -20,8 +21,8 @@ class BlockedViewModel(application: Application) : AndroidViewModel(application)
 
     init {
         messageDao = SmsDatabase.getDatabase(application, scope).smsDao();
-        repo = MessageRepository(messageDao)
-        allMessages = repo.messageList
+        repo = MessageRepository(application.applicationContext)
+        allMessages = repo.allMessages
     }
 
     fun listenForMessage(): LiveData<List<SMS>> {
