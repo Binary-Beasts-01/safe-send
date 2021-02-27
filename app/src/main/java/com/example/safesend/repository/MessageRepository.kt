@@ -34,7 +34,7 @@ object MessageRepository {
         messageDao.insertAll(sms)
     }
 
-    fun readSms(context: Context): List<SMS>{
+    fun readSms(context: Context): MutableList<SMS>{
         val col_projection = arrayOf("_id", "address", "body")
         val cursor: Cursor? = context.contentResolver.query(Uri.parse("content://sms/inbox"), col_projection, null, null, "_id DESC")
         val inboxSms = ArrayList<SMS>()

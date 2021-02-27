@@ -1,17 +1,26 @@
 package com.example.safesend.adapters
 
 import android.content.Context
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Filter
+import android.widget.Filterable
 import android.widget.TextView
+import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import com.example.safesend.R
 import com.example.safesend.Utility.SMS
 import com.example.safesend.models.MessageModel
+import com.google.android.material.internal.ContextUtils.getActivity
+import java.lang.Error
+import java.security.AccessController.getContext
+import java.util.*
 
-class MessagesAdapter: RecyclerView.Adapter<MessagesAdapter.MessageViewHolder>() {
-    var msgs = emptyList<SMS>()
+class MessagesAdapter: RecyclerView.Adapter<MessagesAdapter.MessageViewHolder>(), Filterable {
+    var msgs = mutableListOf<SMS>()
+    var msgsFull = mutableListOf<SMS>()
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MessageViewHolder {
         val view: View = LayoutInflater.from(parent.context)
                 .inflate(R.layout.message_card, parent, false)
@@ -25,8 +34,42 @@ class MessagesAdapter: RecyclerView.Adapter<MessagesAdapter.MessageViewHolder>()
     override fun getItemCount(): Int {
         return msgs.size
     }
-    fun setData(messages: List<SMS>){
+
+    override fun getFilter(): Filter {
+        return  msgsFilter
+    }
+
+//    Search filter is implemented here
+    private  val msgsFilter: Filter = object : Filter() {
+        override fun performFiltering(constraint: CharSequence?): FilterResults {
+            val filteredList = mutableListOf<SMS>()
+            if (constraint == null || constraint.isEmpty()) {
+                filteredList.addAll(msgsFull)
+            } else {
+                val filterPattern: String = constraint.toString().toLowerCase(Locale.ROOT).trim()
+                for (item in msgs) {
+                    if (filterPattern in item.msgSender.toLowerCase(Locale.ROOT).trim() ||
+                        filterPattern in item.msgContent.toLowerCase(Locale.ROOT).trim()) {
+                        filteredList.add(item)
+                    }
+                }
+            }
+            val results: FilterResults = FilterResults()
+            results.values = filteredList
+            return  results
+
+        }
+
+        override fun publishResults(constraint: CharSequence?, results: FilterResults?) {
+            msgs.clear()
+            msgs.addAll(results?.values as List<SMS>)
+            notifyDataSetChanged()
+        }
+    }
+
+    fun setData(messages: MutableList<SMS>){
         this.msgs = messages
+        this.msgsFull.addAll(this.msgs)
         notifyDataSetChanged()
     }
     class MessageViewHolder(item: View) : RecyclerView.ViewHolder(item) {

@@ -5,9 +5,8 @@ import android.content.Context
 import android.database.Cursor
 import android.net.Uri
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
+import android.widget.SearchView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -22,7 +21,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton
 
 class MessagesFragment : Fragment() {
     private lateinit var recyclerView: RecyclerView
-    private lateinit var recycleAdapter: MessagesAdapter
+     lateinit var recycleAdapter: MessagesAdapter
     private lateinit var fab: FloatingActionButton
     private val smsViewModel: MessagesViewModel by viewModels()
 
@@ -35,6 +34,7 @@ class MessagesFragment : Fragment() {
         smsViewModel.allInbox.observe(viewLifecycleOwner, Observer {
             recycleAdapter.setData(it)
         })
+        setHasOptionsMenu(true)
         return  inflater.inflate(R.layout.fragment_home, container, false)
     }
 
@@ -50,4 +50,22 @@ class MessagesFragment : Fragment() {
         }
     }
 
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        inflater.inflate(R.menu.about_menu, menu)
+        val searchItem: MenuItem = menu.findItem(R.id.action_search)
+        val searchView: SearchView = searchItem.actionView as SearchView
+
+        searchView.setOnQueryTextListener(object: SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                return false
+            }
+
+            override fun onQueryTextChange(newText: String?): Boolean {
+                recycleAdapter.getFilter().filter(newText)
+                return false
+            }
+
+        })
+    }
 }

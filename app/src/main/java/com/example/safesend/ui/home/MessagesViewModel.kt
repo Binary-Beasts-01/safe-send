@@ -19,13 +19,13 @@ class MessagesViewModel(private val app: Application) : AndroidViewModel(app) {
     val scope = CoroutineScope(SupervisorJob())
     private var messageDao: DaoSMS
     private var repo: MessageRepository
-    val allInbox: MutableLiveData<List<SMS>> = MutableLiveData()
+    val allInbox: MutableLiveData<MutableList<SMS>> = MutableLiveData()
     init {
         messageDao = SmsDatabase.getDatabase(app, scope).smsDao();
         repo = MessageRepository(app.applicationContext)
         allInbox.postValue(getMs())
     }
-    private fun getMs(): List<SMS>{
+    private fun getMs(): MutableList<SMS>{
        return repo.readSms(app.applicationContext)
     }
 }

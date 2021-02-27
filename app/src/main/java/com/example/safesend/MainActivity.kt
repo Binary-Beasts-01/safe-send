@@ -9,9 +9,13 @@ import android.content.pm.PackageManager
 import android.os.Bundle
 import android.provider.Telephony
 import android.view.Menu
+import android.view.MenuItem
+import android.view.View
+import android.widget.SearchView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
+import androidx.cardview.widget.CardView
 import androidx.core.app.ActivityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.navigation.NavController
@@ -21,11 +25,13 @@ import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
+import com.example.safesend.ui.home.MessagesFragment
 import com.google.android.material.navigation.NavigationView
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var appBarConfiguration: AppBarConfiguration
+    private lateinit var messagesFragment: MessagesFragment
     val REQUEST_CODE_ASK_PERMISSION = 123
     val REQUEST_CODE_ASK_DEFAULT = 3343
     var ReadPermission: Boolean = false
@@ -36,8 +42,6 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         requestPermission()
         br = MessageReceivedBroadcastReceiver()
-        ////////////////////////////////  Notification -- start --
-        //////////////////////////      Notification -- end --
 
         val toolbar: Toolbar = findViewById(R.id.toolbar)
         setSupportActionBar(toolbar)
@@ -56,11 +60,12 @@ class MainActivity : AppCompatActivity() {
             }
         }
         navView.setupWithNavController(navController)
+        messagesFragment = MessagesFragment()
     }
 
     override fun onResume() {
         super.onResume()
-        if(!(ReadPermission && DefaultPermission)){
+        if(ReadPermission && DefaultPermission){
             Toast.makeText(this@MainActivity, "Permission not granted!", Toast.LENGTH_LONG).show()
         }else{
             registerReceiver(br, IntentFilter("android.provider.Telephony.SMS_RECEIVED"))
@@ -92,11 +97,6 @@ class MainActivity : AppCompatActivity() {
         return navController.navigateUp(appBarConfiguration) || super.onSupportNavigateUp()
     }
 
-    //    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-////        super.onCreateOptionsMenu(menu, inflater)
-//        inflater.inflate(R.menu.about_menu, menu)
-//
-//    }
      override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == REQUEST_CODE_ASK_DEFAULT && resultCode == RESULT_OK) {
@@ -121,4 +121,5 @@ class MainActivity : AppCompatActivity() {
         super.onDestroy()
         unregisterReceiver(br)
     }
+
 }
