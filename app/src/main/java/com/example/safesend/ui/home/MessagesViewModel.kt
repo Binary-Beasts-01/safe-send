@@ -26,6 +26,6 @@ class MessagesViewModel(private val app: Application) : AndroidViewModel(app) {
         allInbox.postValue(getMs())
     }
     private fun getMs(): MutableList<SMS>{
-       return repo.readSms(app.applicationContext)
+       return repo.readSms(app.applicationContext).toMutableList()
     }
 }
