@@ -1,6 +1,7 @@
 package com.example.safesend.repository
 
 import android.Manifest
+import android.content.ContentValues
 import android.content.Context
 import android.database.Cursor
 import android.net.Uri
@@ -21,11 +22,15 @@ import kotlinx.coroutines.SupervisorJob
 object MessageRepository {
     private lateinit var messageDao: DaoSMS
     private val scope = CoroutineScope(SupervisorJob())
-    lateinit var allMessages: LiveData<List<SMS>>
+    lateinit var allMessages: LiveData<MutableList<SMS>>
     operator fun invoke(context: Context): MessageRepository {
         messageDao = SmsDatabase.getDatabase(context, scope).smsDao();
         allMessages = messageDao.getAllSms().asLiveData()
         return this
+    }
+
+    fun insertToList(sms: SMS){
+        allMessages.value?.add(sms)
     }
 
     @Suppress("RedundantSuspendModifier")
@@ -49,6 +54,14 @@ object MessageRepository {
         }
         cursor?.close()
         return inboxSms
+    }
+
+    suspend fun storeSms(context: Context, sms: SMS){
+        val content = ContentValues()
+        content.put("address", sms.msgSender);
+        content.put("body", sms.msgContent);
+        content.put("date", sms.msgDate);
+        context.contentResolver.insert(Uri.parse("content://sms/inbox"), content)
     }
 
 

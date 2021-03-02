@@ -1,6 +1,8 @@
 package com.example.safesend.adapters
 
 import android.content.Context
+import android.content.Intent
+import android.content.Intent.FLAG_ACTIVITY_NEW_TASK
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -10,6 +12,7 @@ import android.widget.Filterable
 import android.widget.TextView
 import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
+import com.example.safesend.MessageActivity
 import com.example.safesend.R
 import com.example.safesend.Utility.SMS
 import com.example.safesend.models.MessageModel
@@ -18,9 +21,10 @@ import java.lang.Error
 import java.security.AccessController.getContext
 import java.util.*
 
-class MessagesAdapter: RecyclerView.Adapter<MessagesAdapter.MessageViewHolder>(), Filterable {
+class MessagesAdapter(ctx: Context?): RecyclerView.Adapter<MessagesAdapter.MessageViewHolder>(), Filterable {
     var msgs = mutableListOf<SMS>()
     var msgsFull = mutableListOf<SMS>()
+    var context = ctx
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MessageViewHolder {
         val view: View = LayoutInflater.from(parent.context)
                 .inflate(R.layout.message_card, parent, false)
@@ -30,6 +34,12 @@ class MessagesAdapter: RecyclerView.Adapter<MessagesAdapter.MessageViewHolder>()
     override fun onBindViewHolder(holder: MessageViewHolder, position: Int) {
         val m = msgs.get(position)
         holder.bind(m)
+        holder.itemView.setOnClickListener {
+            val i = Intent(context, MessageActivity::class.java)
+            i.putExtra("Sender", m.msgSender)
+            i.flags = FLAG_ACTIVITY_NEW_TASK
+            context?.startActivity(i)
+        }
     }
     override fun getItemCount(): Int {
         return msgs.size
@@ -75,7 +85,6 @@ class MessagesAdapter: RecyclerView.Adapter<MessagesAdapter.MessageViewHolder>()
     class MessageViewHolder(item: View) : RecyclerView.ViewHolder(item) {
         private val sender: TextView = itemView.findViewById(R.id.msg_sender)
         private val msg: TextView = itemView.findViewById(R.id.msg_content)
-
         fun bind(sms: SMS){
             sender.text = sms.msgSender
             msg.text = sms.msgContent

@@ -17,7 +17,7 @@ class BlockedViewModel(application: Application) : AndroidViewModel(application)
     val scope = CoroutineScope(SupervisorJob())
     private var messageDao: DaoSMS
     private var repo: MessageRepository
-    val allMessages: LiveData<List<SMS>>
+    val allMessages: LiveData<MutableList<SMS>>
 
     init {
         messageDao = SmsDatabase.getDatabase(application, scope).smsDao();
@@ -25,7 +25,7 @@ class BlockedViewModel(application: Application) : AndroidViewModel(application)
         allMessages = repo.allMessages
     }
 
-    fun listenForMessage(): LiveData<List<SMS>> {
+    fun listenForMessage(): LiveData<MutableList<SMS>> {
         return allMessages
     }
 }

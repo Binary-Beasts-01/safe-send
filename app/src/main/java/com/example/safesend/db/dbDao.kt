@@ -12,7 +12,7 @@ interface DaoSMS{
 
 
     @Query("SELECT * FROM sms_blocked ORDER BY msgSender ASC")
-    fun getAllSms(): Flow<List<SMS>>
+    fun getAllSms(): Flow<MutableList<SMS>>
 //
 //    @Query("SELECT * FROM SMS WHERE id IN (:smsId)")
 //    fun loadAllByIds(smsId: IntArray): List<SMS>

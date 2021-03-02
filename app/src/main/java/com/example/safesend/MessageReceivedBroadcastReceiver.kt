@@ -38,12 +38,11 @@ class MessageReceivedBroadcastReceiver : BroadcastReceiver() {
         val dateTimeSms: Long = sms.timestampMillis
         val dateFormat = SimpleDateFormat("MM/dd/yyyy").format(Date(dateTimeSms))
         val sender = sms.originatingAddress.toString()
-
+        val newSms = SMS(0, sender, sms.displayMessageBody, msgDate = dateTimeSms)
         if (isScam(sender)) {
 //               if scam store it in blocked list and abort msg broadcast
                Toast.makeText(context, "Scam SMS blocked", Toast.LENGTH_LONG).show()
                abortBroadcast()
-               val newSms = SMS(0, sender, sms.displayMessageBody)
                scope.launch {
                    repo.insert(newSms)
                }
@@ -51,6 +50,10 @@ class MessageReceivedBroadcastReceiver : BroadcastReceiver() {
            }else {
 //            if not scam then display notification and add msg to
                showNotification(context, sms)
+                scope.launch {
+                    repo.storeSms(context, newSms)
+                    repo.insertToList(newSms)
+            }
            }
     }
 

@@ -30,7 +30,7 @@ class MessagesFragment : Fragment() {
             container: ViewGroup?,
             savedInstanceState: Bundle?
     ): View? {
-        recycleAdapter = MessagesAdapter()
+        recycleAdapter = MessagesAdapter(activity?.applicationContext)
         smsViewModel.allInbox.observe(viewLifecycleOwner, Observer {
             recycleAdapter.setData(it)
         })
