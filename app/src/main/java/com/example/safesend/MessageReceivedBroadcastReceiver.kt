@@ -36,7 +36,6 @@ class MessageReceivedBroadcastReceiver : BroadcastReceiver() {
         val sms = Telephony.Sms.Intents.getMessagesFromIntent(intent)[0]
         createNotificationChannel(context)
         val dateTimeSms: Long = sms.timestampMillis
-        val dateFormat = SimpleDateFormat("MM/dd/yyyy").format(Date(dateTimeSms))
         val sender = sms.originatingAddress.toString()
         val newSms = SMS(0, sender, sms.displayMessageBody, msgDate = dateTimeSms)
         if (isScam(sender)) {

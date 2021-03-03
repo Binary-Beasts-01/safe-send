@@ -9,6 +9,7 @@
     <dimen name="text_x_small">10sp</dimen>
     <dimen name="text_small">12sp</dimen>
     <dimen name="text_medium">18sp</dimen>
+    <dimen name="text_l_small">13sp</dimen>
     <dimen name="text_large">24sp</dimen>
     <dimen name="text_x_large">30sp</dimen>
 <!--    text margins style-->

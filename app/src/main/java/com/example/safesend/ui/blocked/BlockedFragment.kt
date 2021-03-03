@@ -29,7 +29,6 @@ class BlockedFragment : Fragment() {
         blockedRecycleAdapter = BlockedMessagesAdapter()
         blockedViewModel.listenForMessage().observe(viewLifecycleOwner, Observer {
             blockedRecycleAdapter.setData(it)
-            Toast.makeText(activity, "Data changed: size: ${it.size}", Toast.LENGTH_SHORT).show()
         })
 
 

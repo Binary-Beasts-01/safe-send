@@ -19,6 +19,8 @@ import com.example.safesend.models.MessageModel
 import com.google.android.material.internal.ContextUtils.getActivity
 import java.lang.Error
 import java.security.AccessController.getContext
+import java.sql.Date
+import java.text.SimpleDateFormat
 import java.util.*
 
 class MessagesAdapter(ctx: Context?): RecyclerView.Adapter<MessagesAdapter.MessageViewHolder>(), Filterable {
@@ -85,9 +87,12 @@ class MessagesAdapter(ctx: Context?): RecyclerView.Adapter<MessagesAdapter.Messa
     class MessageViewHolder(item: View) : RecyclerView.ViewHolder(item) {
         private val sender: TextView = itemView.findViewById(R.id.msg_sender)
         private val msg: TextView = itemView.findViewById(R.id.msg_content)
+        private val date: TextView = itemView.findViewById(R.id.msg_date)
         fun bind(sms: SMS){
+            val dateFormat = SimpleDateFormat("MM/dd/yyyy").format(Date(sms.msgDate))
             sender.text = sms.msgSender
             msg.text = sms.msgContent
+            date.text = dateFormat
         }
     }
 }

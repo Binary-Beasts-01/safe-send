@@ -40,7 +40,7 @@ abstract class SmsDatabase : RoomDatabase() {
             super.onCreate(db)
             INSTANCE?.let { database ->
                 scope.launch {
-                    populateDatabase(database.smsDao())
+//                    populateDatabase(database.smsDao())
                 }
             }
         }
